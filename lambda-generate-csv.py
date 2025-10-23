@@ -1,20 +1,16 @@
 import json
 import csv
-import boto3
 from io import StringIO
 from datetime import datetime
 
-# Cliente de S3 (opcional, si quieres guardar el CSV en S3)
-s3_client = boto3.client('s3')
-
 def lambda_handler(event, context):
     """
-    Lambda function que genera un archivo CSV con encabezados específicos
+    Lambda function que genera un archivo CSV y lo retorna
     
     Parámetros esperados en event:
-    - data: lista de diccionarios con los datos (opcional)
-    - bucket_name: nombre del bucket S3 donde guardar el archivo (opcional)
-    - file_name: nombre del archivo CSV (opcional, default: output.csv)
+    - data: lista de diccionarios con los datos
+    - file_name: nombre del archivo CSV (opcional)
+    - include_example: si es True y no hay data, incluye datos de ejemplo (opcional)
     """
     
     # Encabezados del CSV
@@ -30,15 +26,15 @@ def lambda_handler(event, context):
         'Site detalle'
     ]
     
-    # Obtener datos del evento (si se proporcionan)
+    # Obtener parámetros del evento
     data = event.get('data', [])
-    bucket_name = event.get('bucket_name')
-    file_name = event.get('file_name', f'output_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv')
+    file_name = event.get('file_name', f'reporte_coppel_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv')
+    include_example = event.get('include_example', False)
     
-    # Si no hay datos, crear una fila de ejemplo
-    if not data:
+    # Si no hay datos y se solicita ejemplo, crear datos de ejemplo
+    if not data and include_example:
         data = [{
-            'Item': 'Example Item',
+            'Item': '1',
             'Order ID': 'ORD-12345',
             'Order date': datetime.now().strftime('%Y-%m-%d'),
             'Outposts ID': 'OP-001',
@@ -63,48 +59,15 @@ def lambda_handler(event, context):
     # Obtener contenido del CSV
     csv_content = csv_buffer.getvalue()
     
-    # Si se especifica un bucket, guardar en S3
-    if bucket_name:
-        try:
-            s3_client.put_object(
-                Bucket=bucket_name,
-                Key=file_name,
-                Body=csv_content,
-                ContentType='text/csv'
-            )
-            
-            return {
-                'statusCode': 200,
-                'body': json.dumps({
-                    'message': 'CSV file generated and uploaded successfully',
-                    'bucket': bucket_name,
-                    'file_name': file_name,
-                    'records_written': len(data)
-                })
-            }
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'body': json.dumps({
-                    'message': 'Error uploading to S3',
-                    'error': str(e)
-                })
-            }
-    
-    # Si no hay bucket, devolver el CSV como string en base64
-    else:
-        import base64
-        csv_base64 = base64.b64encode(csv_content.encode()).decode()
-        
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Content-Type': 'text/csv',
-                'Content-Disposition': f'attachment; filename="{file_name}"'
-            },
-            'body': csv_content,
-            'isBase64Encoded': False,
-            'metadata': {
-                'records_written': len(data)
-            }
-        }
+    # Retornar el CSV
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': f'attachment; filename="{file_name}"'
+        },
+        'body': csv_content,
+        'file_name': file_name,
+        'records_count': len(data),
+        'generated_at': datetime.now().isoformat()
+    }
