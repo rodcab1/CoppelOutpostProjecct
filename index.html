@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro de Asset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid #e1e8ed;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 3px solid #00d4ff;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d1d9e0;
+            background: #fafbfc;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #fafbfc;
+            border: 2px dashed #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .file-upload-btn:hover {
+            background: #f0f9ff;
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .file-upload-btn svg {
+            margin-right: 12px;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            display: none;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 1px solid #e1e8ed;
+        }
+
+        .preview-container.active {
+            display: block;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .file-name {
+            margin-top: 15px;
+            color: #4a5568;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .remove-image {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: white;
+            color: #e53e3e;
+            border: 1px solid #e53e3e;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+        }
+
+        .remove-image:hover {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            background: #00d4ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .required {
+            color: #e53e3e;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-content {
+                padding: 30px 20px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Registro de Asset</h1>
+            <p class="subtitle">Complete todos los campos requeridos para el registro</p>
+        </div>
+        
+        <div class="form-content">
+            <form id="assetForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="assetId">Asset ID <span class="required">*</span></label>
+                        <input type="text" id="assetId" name="assetId" required placeholder="Ingrese el Asset ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="outpostId">Outpost ID <span class="required">*</span></label>
+                        <input type="text" id="outpostId" name="outpostId" required placeholder="Ingrese el Outpost ID">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contacto">Contacto <span class="required">*</span></label>
+                    <input type="text" id="contacto" name="contacto" required placeholder="Nombre del contacto">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono de Contacto <span class="required">*</span></label>
+                    <input type="tel" id="telefono" name="telefono" required placeholder="Ej: +52 55 1234 5678">
+                </div>
+
+                <div class="form-group">
+                    <label for="direccion">Dirección de Entrega <span class="required">*</span></label>
+                    <textarea id="direccion" name="direccion" required placeholder="Ingrese la dirección completa de entrega"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="sensorImage">Imagen del Sensor <span class="required">*</span></label>
+                    <div class="file-upload">
+                        <input type="file" id="sensorImage" name="sensorImage" accept="image/*" required>
+                        <label for="sensorImage" class="file-upload-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Seleccionar imagen del sensor
+                        </label>
+                    </div>
+                    <div class="preview-container" id="previewContainer">
+                        <img id="previewImage" class="preview-image" alt="Vista previa">
+                        <p class="file-name" id="fileName"></p>
+                        <button type="button" class="remove-image" id="removeImage">Eliminar imagen</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Enviar Formulario</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('sensorImage');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const fileName = document.getElementById('fileName');
+        const removeImageBtn = document.getElementById('removeImage');
+        const form = document.getElementById('assetForm');
+
+        // Manejar la selección de archivo
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    fileName.textContent = file.name;
+                    previewContainer.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Manejar la eliminación de imagen
+        removeImageBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            previewImage.src = '';
+            fileName.textContent = '';
+            previewContainer.classList.remove('active');
+        });
+
+        // Manejar el envío del formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                assetId: document.getElementById('assetId').value,
+                contacto: document.getElementById('contacto').value,
+                direccion: document.getElementById('direccion').value,
+                telefono: document.getElementById('telefono').value,
+                outpostId: document.getElementById('outpostId').value,
+                sensorImage: fileInput.files[0] ? fileInput.files[0].name : null
+            };
+
+            console.log('Datos del formulario:', formData);
+            alert('Formulario enviado correctamente!\n\nDatos capturados:\n' + JSON.stringify(formData, null, 2));
+            
+            // código para enviar los datos a tu servidor
+        });
+    </script>
+</body>
+</html>
